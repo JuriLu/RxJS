@@ -10,7 +10,9 @@ const observable$ = new Observable((subscriber) => {
     subscriber.complete();
   }, 2000);
 
-
+  return () => {
+    console.log('__Teardown__');
+  };
 });
 
 console.log(`--'Before Execute'--`);
@@ -20,14 +22,12 @@ observable$.subscribe({
 });
 console.log(`--'After Execute'--`);
 
-
-// So simplified what subscriber method had as an argument is an observer object  "subscribe(observer?: Partial<Observer<T>>): Subscription;" which has an Observer interface 
+// So simplified what subscriber method had as an argument is an observer object  "subscribe(observer?: Partial<Observer<T>>): Subscription;" which has an Observer interface
 
 export interface Observer<T> {
-    next: (value: T) => void;
-    error: (err: any) => void;
-    complete: () => void;
-} 
+  next: (value: T) => void;
+  error: (err: any) => void;
+  complete: () => void;
+}
 
-
-//After the Subscription has ended the 'Teardown Logic'
+//After the Subscription has ended the 'Teardown Logic'(preventing memory leaks, cancellation)
