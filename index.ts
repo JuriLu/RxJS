@@ -5,10 +5,13 @@ const observable$ = new Observable((subscriber) => {
 
   subscriber.next('Alice Added Synchronously');
   subscriber.next('Ben Added Synchronously');
+
+  setTimeout(() => subscriber.error(new Error('Failure')), 2000);
+
   setTimeout(() => {
-    subscriber.next('**Charlie Added after 2s Asynchronously');
-  }, 2000);
-  setTimeout(() => subscriber.error(new Error('Failure')), 4000);
+    subscriber.next('**Charlie Added after 2s Asynchronously');  // WILL NOT RUN
+    subscriber.complete();                                      // WILL NOT RUN
+  }, 4000);
 
   return () => {
     console.log('__Teardown__');
