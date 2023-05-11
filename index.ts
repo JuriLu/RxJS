@@ -7,8 +7,8 @@ const observable$ = new Observable((subscriber) => {
   subscriber.next('Ben Added Synchronously');
   setTimeout(() => {
     subscriber.next('**Charlie Added after 2s Asynchronously');
-    subscriber.complete();
   }, 2000);
+  setTimeout(() => subscriber.error(new Error('Failure')), 4000);
 
   return () => {
     console.log('__Teardown__');
@@ -19,6 +19,7 @@ console.log(`--'Before Execute'--`);
 observable$.subscribe({
   next: (value) => console.log(value),
   complete: () => console.log(`----'Completed'----`),
+  error: (error) => console.log(`-*-*${error}*-*-`),
 });
 console.log(`--'After Execute'--`);
 
