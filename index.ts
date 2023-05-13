@@ -1,26 +1,10 @@
-import { forkJoin } from 'rxjs';
-// Mike is from New Delhi and likes to eat pasta.
+import { of } from 'rxjs';
+import { filter, map, tap } from 'rxjs/operators';
 
-import { ajax } from 'rxjs/ajax';
-import { map } from 'rxjs/operators';
-
-const randomFirstName$ = ajax<any>(
-  'https://random-data-api.com/api/name/random_name'
-).pipe(map((ajaxResponse) => ajaxResponse.response.first_name));
-
-const randomCapitalNation$ = ajax<any>(
-  'https://random-data-api.com/api/nation/random_nation'
-).pipe(map((ajaxResponse) => ajaxResponse.response.capital));
-
-const randomdishFood$ = ajax<any>(
-  'https://random-data-api.com/api/food/random_food'
-).pipe(map((ajaxResponse) => ajaxResponse.response.dish));
-
-// randomFirstName$.subscribe((value) => console.log(value));
-// randomCapitalNation$.subscribe((value) => console.log(value));
-// randomdishFood$.subscribe((value) => console.log(value));
-
-forkJoin([randomFirstName$, randomCapitalNation$, randomdishFood$]).subscribe(
-  ([firstName, capital, dish]) =>
-    console.log(`${firstName} is from ${capital} and likes to eat ${dish}.`)
-);
+of(1, 7, 3, 2, 6)
+  .pipe(
+    filter((value) => value > 5),
+    tap((value) => console.log('Spy :', value)),
+    map((value) => value * 2)
+  )
+  .subscribe((value) => console.log('Output:', value));
