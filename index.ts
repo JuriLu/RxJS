@@ -1,21 +1,20 @@
-import { ajax, AjaxResponse } from 'rxjs/ajax';
+import { Observable } from 'rxjs';
 
-interface CCRes {
-  credit_card_expiry_date: string;
-  credit_card_number: string;
-  credit_card_type: string;
-  id: number;
-  uid: string;
-}
+const helloButton = document.querySelector('button#hello');
 
-const ajax$ = ajax('https://random-data-api.com/api/v2/credit_cards');
+const helloClick$ = new Observable<MouseEvent>((subscriber) => {
+  helloButton.addEventListener('click', (event: MouseEvent) => {
+    subscriber.next(event);
+  });
+});
 
-ajax$.subscribe((data: AjaxResponse<CCRes>) =>
-  console.log('Sub 1: ', data.response.credit_card_number)
-);
-ajax$.subscribe((data: AjaxResponse<CCRes>) =>
-  console.log('Sub 2: ', data.response.credit_card_number)
-);
-ajax$.subscribe((data: AjaxResponse<CCRes>) =>
-  console.log('Sub 3: ', data.response.credit_card_number)
-);
+helloClick$.subscribe((ev) => console.log('Sub 1', ev.type, ev.x, ev.y));
+helloClick$.subscribe((ev) => console.log('Sub 2', ev.type, ev.x, ev.y));
+
+setTimeout(() => {
+  console.log('Sub 3 Started');
+  helloClick$.subscribe((ev) => console.log('Sub 3', ev.type, ev.x, ev.y));
+
+  console.log('Sub 4 Started');
+  helloClick$.subscribe((ev) => console.log('Sub 4', ev.type, ev.x, ev.y));
+}, 4000);
