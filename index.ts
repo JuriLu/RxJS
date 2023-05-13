@@ -1,33 +1,30 @@
-import { from, fromEvent, Observable } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 
-const triggerButton = document.querySelector('button#trigger');
+console.log('App Started');
 
-const subscription = fromEvent<MouseEvent>(triggerButton, 'click').subscribe(
-  (event) => console.log(event, event.type, event.x, event.y)
-);
-
-const triggerClick$ = new Observable((subscriber) => {
-  const clickHandlerFn = (event) => {
-    console.log('Event Callback Executed');
-    subscriber.next(event);
-  };
-
-  triggerButton.addEventListener('click', clickHandlerFn);
+const timer$ = new Observable((subscriber) => {
+  const timeoutId = setTimeout(() => {
+    console.log('Timer Started');
+    subscriber.next(0);
+    subscriber.complete();
+  }, 2000);
 
   return () => {
-    triggerButton.removeEventListener('click', clickHandlerFn);
+    clearTimeout(timeoutId);
   };
 });
 
-const subscriptionCustom = triggerClick$.subscribe((ev: MouseEvent) => {
-  console.log('Custom Subscription: ');
-  console.log(ev);
+const subscription = timer$.subscribe({
+  next: (value) => console.log(value),
+  complete: () => console.log('completed'),
 });
 
-setTimeout(() => {
-  console.log('Unsubscribing Sub');
-  subscription.unsubscribe();
+// timer(2000).subscribe({
+//   next: (value) => console.log(value),
+//   complete: () => console.log('Completed'),
+// });
 
-  console.log('Unsubscribing CustomSub');
-  subscriptionCustom.unsubscribe();
-}, 3000);
+setTimeout(() => {
+  subscription.unsubscribe();
+  console.log('Unsubscribing');
+}, 1000);
