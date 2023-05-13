@@ -8,32 +8,14 @@ interface CCRes {
   uid: string;
 }
 
-let CCResObjectCopy: CCRes;
+const ajax$ = ajax('https://random-data-api.com/api/v2/credit_cards');
 
-ajax('https://random-data-api.com/api/v2/credit_cards').subscribe(
-  (data: AjaxResponse<CCRes>) => {
-    const {
-      credit_card_expiry_date,
-      credit_card_number,
-      credit_card_type,
-      id,
-      uid,
-    } = data.response;
-
-    CCResObjectCopy = data.response;
-
-    CCResObjectCopy = {
-      credit_card_expiry_date,
-      credit_card_number,
-      credit_card_type,
-      id,
-      uid,
-    };
-
-    let CCED = credit_card_expiry_date;
-
-    console.log(`Ajax Response: ${data.response}
-                A copy of the object created ${CCResObjectCopy}
-                Expiry Date: ${credit_card_expiry_date}`);
-  }
+ajax$.subscribe((data: AjaxResponse<CCRes>) =>
+  console.log('Sub 1: ', data.response.credit_card_number)
+);
+ajax$.subscribe((data: AjaxResponse<CCRes>) =>
+  console.log('Sub 2: ', data.response.credit_card_number)
+);
+ajax$.subscribe((data: AjaxResponse<CCRes>) =>
+  console.log('Sub 3: ', data.response.credit_card_number)
 );
