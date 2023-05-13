@@ -1,21 +1,39 @@
-import { Observable, Subscriber } from 'rxjs';
+import { ajax, AjaxResponse } from 'rxjs/ajax';
 
-const interval$ = new Observable<number>((subscriber) => {
-  let counter = 1;
+interface CCRes {
+  credit_card_expiry_date: string;
+  credit_card_number: string;
+  credit_card_type: string;
+  id: number;
+  uid: string;
+}
 
-  const intervalId = setInterval(() => {
-    console.log('Emmited, ', counter);
-    subscriber.next(counter++);
-  }, 1000);
+let CCResObjectCopy: CCRes;
 
-  return () => {
-    clearInterval(intervalId);
-  };
-});
+ajax('https://random-data-api.com/api/v2/credit_cards').subscribe(
+  (data: AjaxResponse<CCRes>) => {
+    const {
+      credit_card_expiry_date,
+      credit_card_number,
+      credit_card_type,
+      id,
+      uid,
+    } = data.response;
 
-const subscription = interval$.subscribe((value) => console.log(value));
+    CCResObjectCopy = data.response;
 
-setTimeout(() => {
-  console.log('Unsubscribing');
-  subscription.unsubscribe();
-}, 7000);
+    CCResObjectCopy = {
+      credit_card_expiry_date,
+      credit_card_number,
+      credit_card_type,
+      id,
+      uid,
+    };
+
+    let CCED = credit_card_expiry_date;
+
+    console.log(`Ajax Response: ${data.response}
+                A copy of the object created ${CCResObjectCopy}
+                Expiry Date: ${credit_card_expiry_date}`);
+  }
+);
