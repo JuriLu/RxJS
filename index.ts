@@ -1,39 +1,26 @@
-import { Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';
+// Mike is from New Delhi and likes to eat pasta.
 
-interface NewsItem {
-  category: 'Business' | 'Sports';
-  content: string;
-}
+import { ajax } from 'rxjs/ajax';
+import { map } from 'rxjs/operators';
 
-const newsFeed$ = new Observable<NewsItem>((subscriber) => {
-  setTimeout(() => {
-    subscriber.next({ category: 'Business', content: 'A' });
-  }, 1000);
-  setTimeout(() => {
-    subscriber.next({ category: 'Sports', content: 'B' });
-  }, 3000);
-  setTimeout(() => {
-    subscriber.next({ category: 'Business', content: 'C' });
-  }, 4000);
-  setTimeout(() => {
-    subscriber.next({ category: 'Sports', content: 'D' });
-  }, 6000);
-  setTimeout(() => {
-    subscriber.next({ category: 'Business', content: 'E' });
-  }, 7000);
-});
+const randomFirstName$ = ajax<any>(
+  'https://random-data-api.com/api/name/random_name'
+).pipe(map((ajaxResponse) => ajaxResponse.response.first_name));
 
-// newsFeed$
-//   .pipe(filter((item) => item.category === 'Business'))
-//   .subscribe((value) => {
-//     console.log(value);
-//   });
+const randomCapitalNation$ = ajax<any>(
+  'https://random-data-api.com/api/nation/random_nation'
+).pipe(map((ajaxResponse) => ajaxResponse.response.capital));
 
-const sportsNewsFeed$ = newsFeed$.pipe(
-  filter((item) => item.category === 'Sports')
+const randomdishFood$ = ajax<any>(
+  'https://random-data-api.com/api/food/random_food'
+).pipe(map((ajaxResponse) => ajaxResponse.response.dish));
+
+// randomFirstName$.subscribe((value) => console.log(value));
+// randomCapitalNation$.subscribe((value) => console.log(value));
+// randomdishFood$.subscribe((value) => console.log(value));
+
+forkJoin([randomFirstName$, randomCapitalNation$, randomdishFood$]).subscribe(
+  ([firstName, capital, dish]) =>
+    console.log(`${firstName} is from ${capital} and likes to eat ${dish}.`)
 );
-
-sportsNewsFeed$.subscribe((item) => {
-  console.log(item);
-});
