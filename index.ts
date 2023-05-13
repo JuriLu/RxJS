@@ -1,31 +1,26 @@
-import { forkJoin } from 'rxjs';
-import { ajax, AjaxResponse } from 'rxjs/ajax';
+import { forkJoin, lastValueFrom, Observable } from 'rxjs';
 
-const randomNames$ = ajax<any>(
-  'https://random-data-api.com/api/name/random_name'
-);
-const randomNation$ = ajax<any>(
-  'https://random-data-api.com/api/nation/random_nation'
-);
-const randomFood$ = ajax<any>(
-  'https://random-data-api.com/api/food/random_food'
-);
+const a$ = new Observable((subscriber) => {
+  setTimeout(() => {
+    subscriber.next('A');
+    subscriber.complete();
+  }, 5000);
 
-// randomNames$.subscribe((ajaxResponse: any) =>
-//   console.log(ajaxResponse.response.first_name)
-// );
-// randomNation$.subscribe((ajaxResponse: any) =>
-//   console.log(ajaxResponse.response.capital)
-// );
-// randomFood$.subscribe((ajaxResponse: any) =>
-//   console.log(ajaxResponse.response.dish)
-// );
+  return () => {
+    console.log('A teardown');
+  };
+});
 
-forkJoin([randomNames$, randomNation$, randomFood$]).subscribe(
-  (
-    [nameAjax, nationAjax, foodAjax] //Array Destructuring
-  ) =>
-    console.log(
-      `${nameAjax.response.first_name} is from ${nationAjax.response.capital} and likes to eat ${foodAjax.response.dish}`
-    )
-);
+const b$ = new Observable((subscriber) => {
+  setTimeout(() => {
+    subscriber.error('Failure!');
+  }, 3000);
+  return () => {
+    console.log('B teardown');
+  };
+});
+
+forkJoin([a$, b$]).subscribe({
+  next: (value) => console.log(value),
+  error: (err) => console.log('Error:', err),
+});
