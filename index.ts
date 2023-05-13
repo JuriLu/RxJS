@@ -1,19 +1,18 @@
-import { from, Observable, of } from 'rxjs';
+import { from, fromEvent, Observable } from 'rxjs';
 
-from(['Alice', 'Ben', 'Charlie']).subscribe({
-  next: (values) => console.log(values),
-  complete: () => console.log('== Completed =='),
+const triggerButton = document.querySelector('button#trigger');
+
+fromEvent<MouseEvent>(triggerButton, 'click').subscribe((event) =>
+  console.log(event, event.type, event.x, event.y)
+);
+
+const triggerClick$ = new Observable((subscriber) => {
+  triggerButton.addEventListener('click', (event) => {
+    subscriber.next(event);
+  });
 });
 
-const somePromise = new Promise((resolve, reject) => {
-  // resolve('-- Promise Resolved --');
-  reject('== Promise Rejected ==');
-});
-
-const observableFromPromise$ = from(somePromise);
-
-observableFromPromise$.subscribe({
-  next: (value) => console.log(value),
-  error: (err) => console.log('Error: ', err),
-  complete: () => console.log('-- Completed --'),
+triggerClick$.subscribe((ev: MouseEvent) => {
+  console.log('Custom Subscription: ');
+  console.log(ev);
 });
