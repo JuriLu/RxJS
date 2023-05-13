@@ -1,19 +1,18 @@
-import { EMPTY, Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { concatMap } from 'rxjs/operators';
 
-const failingHttpRequest$ = new Observable((subs) => {
+const source$ = new Observable((subscriber) => {
   setTimeout(() => {
-    subs.error(new Error('Timeout'));
-  }, 3000);
+    subscriber.next('A');
+  }, 2000);
+  setTimeout(() => {
+    subscriber.next('B');
+  }, 5000);
 });
 
-console.log('App Started');
-failingHttpRequest$
-  .pipe(
-    // catchError((error) => of('Fallback value'))
-    catchError((error) => EMPTY) // EMPTY is an empty observable
-  )
-  .subscribe({
-    next: (value) => console.log(value),
-    complete: () => console.log('Completed'),
-  });
+console.log('App has started');
+source$
+  .pipe(concatMap((value) => of(1, 2)))
+  .subscribe((value) => console.log(value));
+
+// FOR THE VALUE A AND B EMITTED FROM SOURCE$ OBSERVABLE, VALUES 1, 2 ARE EMITTED FROM OF(1,2) OBSERVABLE
